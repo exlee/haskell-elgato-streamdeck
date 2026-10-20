@@ -1,0 +1,101 @@
+cabal-version:      3.0
+name:               elgato-streamdeck
+version:            0.13.2
+synopsis:           Driver for Elgato Stream Deck devices over hidapi
+description:
+  Haskell port of the elgato-streamdeck Rust crate
+  (<https://github.com/OpenActionAPI/rust-elgato-streamdeck>), translated
+  through its OCaml translation. Reads buttons, encoders and touch input, and
+  writes key images, LCD strips and brightness on Stream Deck Original, Mini,
+  XL, MK.2, Pedal, Plus, Plus XL and Neo devices. Talks to libhidapi and
+  libturbojpeg, loaded at runtime with dlopen, so building needs no C headers.
+license:            MPL-2.0
+license-file:       LICENSE
+author:             Alexander Przemysław Kamiński
+maintainer:         exlee@users.noreply.github.com
+copyright:
+  2026 Alexander Przemysław Kamiński;
+  Rust original by the elgato-streamdeck contributors
+homepage:           https://github.com/exlee/haskell-elgato-streamdeck
+bug-reports:        https://github.com/exlee/haskell-elgato-streamdeck/issues
+category:           Hardware
+build-type:         Simple
+extra-doc-files:
+  CHANGELOG.md
+  README.md
+tested-with:        GHC ==9.14.1
+extra-source-files:
+  40-streamdeck.rules
+  examples/no-place-like-localhost.jpg
+
+source-repository head
+  type:     git
+  location: https://github.com/exlee/haskell-elgato-streamdeck.git
+
+common shared
+  default-language: GHC2021
+  default-extensions: LambdaCase
+  ghc-options:      -Wall
+  build-depends:    base >=4.18 && <5
+
+library
+  import:           shared
+  hs-source-dirs:   src
+  exposed-modules:
+    System.Hardware.StreamDeck
+    System.Hardware.StreamDeck.Async
+    System.Hardware.StreamDeck.Blank
+    System.Hardware.StreamDeck.Bmp
+    System.Hardware.StreamDeck.Device
+    System.Hardware.StreamDeck.DynLib
+    System.Hardware.StreamDeck.HidApi
+    System.Hardware.StreamDeck.Image
+    System.Hardware.StreamDeck.Images
+    System.Hardware.StreamDeck.Info
+    System.Hardware.StreamDeck.Jpeg
+    System.Hardware.StreamDeck.Types
+    System.Hardware.StreamDeck.Util
+  build-depends:
+    , array >=0.5 && <0.6
+    , bytestring >=0.11 && <0.13
+    , containers >=0.6 && <0.9
+    , stm >=2.5 && <2.6
+    , text >=2.0 && <2.2
+    , transformers >=0.5 && <0.7
+    , unix >=2.8 && <2.9
+
+executable list-devices
+  import:           shared
+  hs-source-dirs:   examples
+  main-is:          ListDevices.hs
+  build-depends:    elgato-streamdeck
+  ghc-options:      -threaded
+
+executable simple
+  import:           shared
+  hs-source-dirs:   examples
+  main-is:          Simple.hs
+  build-depends:    elgato-streamdeck
+  ghc-options:      -threaded
+
+executable async
+  import:           shared
+  hs-source-dirs:   examples
+  main-is:          Async.hs
+  build-depends:    elgato-streamdeck
+  ghc-options:      -threaded
+
+test-suite elgato-streamdeck-test
+  import:           shared
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   test
+  main-is:          Main.hs
+  other-modules:
+    Assert
+    FakeTransport
+    TestAsync
+    TestStreamDeck
+  build-depends:
+    , bytestring >=0.11 && <0.13
+    , elgato-streamdeck
+  ghc-options:      -threaded
